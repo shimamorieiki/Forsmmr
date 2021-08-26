@@ -1,29 +1,24 @@
 import os
 import re
 import json
+import glob
 
 def main():
-
 
     with open("./config.json", "r") as f:
         json_dict = json.load(f)
         separator = json_dict["separator"]
 
-    # このプログラムのフォルダからのパス
-    textPath = './text'
-    csvPath = './csv'
-
     # textPath以下のファイル一覧を取得
-    files = os.listdir(textPath)
-    file = [f for f in files if os.path.isfile(os.path.join(textPath, f))]
+    files = glob.glob('./**/*.txt', recursive=True)
 
-
-    for i in file:
+    for i in files:
         headers = []
         body = []
-        textFile = textPath+"/"+i
-        csvFile = csvPath+"/"+i.replace(".txt","")+".csv"
-        with open(textFile,"r") as f:
+        csvFile = i.replace(".txt","")+".csv"
+        if ".txt" not in i:
+            continue
+        with open(i,"r") as f:
             with open(csvFile,"w") as w:
 
                 # テキストの文字列を取得
@@ -49,6 +44,6 @@ def main():
                 # ボディー部分書き込み
                 for line in body:
                     w.write(separator.join(line)+"\n")
-
+        # os.remove(i)
 if __name__ == "__main__":
     main()
